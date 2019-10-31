@@ -1,0 +1,9 @@
+html {
+    position: relative;
+    min-height: 100%;
+  }
+  
+  .navbar-inverse {
+    background-image: linear-gradient(to bottom,#1424E4 0,#222 100%);
+  }
+  
