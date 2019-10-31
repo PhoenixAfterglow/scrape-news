@@ -1,7 +1,11 @@
+require("dotenv").config();
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+
+mongoose.set('createIndexes', true);
+
 
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
@@ -9,7 +13,7 @@ var Article = require("./models/Article.js");
 var request = require("request");
 var cheerio = require("cheerio");
 
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 8080;
 mongoose.Promise = Promise;
 
 var app = express();
@@ -21,7 +25,10 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://heroku_j5jgln1r:kadq0g2imkt7rfqf61t58aeruv@ds163681.mlab.com:63681/heroku_j5jgln1r");
+var MONGODB_URI = process.env.MONGODB_URI || process.env.DEVDATABASE;
+
+mongoose.connect(MONGODB_URI);
+
 var db = mongoose.connection;
 
 db.on("error", function(error) {

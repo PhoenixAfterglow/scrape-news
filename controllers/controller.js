@@ -5,8 +5,8 @@ var request = require('request'); // for web-scraping
 var cheerio = require('cheerio'); // for web-scraping
 
 // Import the Comment and Article models
-var Note = require('../models/Note.js');
-var Article = require('../models/Article.js');
+var Note = require('../../models/Note.js.js');
+var Article = require('../../models/Article.js.js');
 
 // Index Page Render (first visit to the site)
 router.get('/', function (req, res){
