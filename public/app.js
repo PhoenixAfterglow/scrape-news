@@ -1,8 +1,8 @@
-$.getJSON("/articles", function(data) {
-    for (var i = 0; i < data.length; i++) {
-      $("#articles").append("<div class='panel panel-default'><div class='panel-heading'> <p data-id='" + data[i]._id + "'>" + data[i].title + "</p></div>" + "<div class='panel-body'><a href='" + data[i].link + "'>Link to Article</p>");
-    }
-  });
+// $.getJSON("/articles", function(data) {
+//     for (var i = 0; i < data.length; i++) {
+//       $("#articles").append("<div class='panel panel-default'><div class='panel-heading'> <p data-id='" + data[i]._id + "'>" + data[i].title + "</p></div>" + "<div class='panel-body'><a href='" + data[i].link + "'>Link to Article</p>");
+//     }
+//   });
   
   $(document).on("click", "p", function() {
     $("#notes").empty();
@@ -28,6 +28,20 @@ $.getJSON("/articles", function(data) {
       });
   });
   
+
+  $(document).on("click", "#scrape-button", function() {
+    // Now make an ajax call for the Article
+    $.ajax({
+      method: "GET",
+      url: "/newscrape"
+    })
+    .then(function(elements) {
+      // window.location.reload()
+      console.log(elements);
+    })
+  });
+
+
   $(document).on("click", "#savenote", function() {
     var thisId = $(this).attr("data-id");
     $.ajax({

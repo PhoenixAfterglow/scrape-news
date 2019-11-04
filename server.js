@@ -9,8 +9,10 @@ var axios = require("axios");
 mongoose.set('createIndexes', true);
 
 
-var Note = require("./models/Note.js");
-var Article = require("./models/Article.js");
+// var Note = require("./models/Note.js");
+// var Article = require("./models/Article.js");
+var db = require("./models");
+
 
 var request = require("request");
 var cheerio = require("cheerio");
@@ -42,17 +44,18 @@ app.use(express.static("public"));
 
 var MONGODB_URI = process.env.MONGODB_URI || process.env.DEVDATABASE;
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useUnifiedTopology: true,  useNewUrlParser: true});
 
-var db = mongoose.connection;
+// var db = mongoose.connection;
 
-db.on("error", function(error) {
-  console.log("Mongoose Error: ", error);
-});
 
-db.once("open", function() {
-  console.log("Mongoose connection successful.");
-});
+// db.on("error", function(error) {
+//   console.log("Mongoose Error: ", error);
+// });
+
+// db.once("open", function() {
+//   console.log("Mongoose connection successful.");
+// });
 
 // Start routes here...
 app.get("/", function (req, res) {
@@ -63,35 +66,39 @@ app.get("/", function (req, res) {
 
 });
 app.get("/newscrape", function (req, res) {
-  axios.get("https://www.nytimes.com/").then(function (response) {
+  axios.get("https://www.gameinformer.com/").then(function (response) {
       var $ = cheerio.load(response.data)
-      $("h2 span").each(function (i, element) {
-          var headline = $(element).text();
-          var link = "https://www.nytimes.com";
-          link = link + $(element).parents("a").attr("href");
-          var summaryOne = $(element).parent().parent().siblings().children("li:first-child").text();
-          var summaryTwo = $(element).parent().parent().siblings().children("li:last-child").text();
+      var elements = []
+      $("div .article-body").each(function (i, element) {
+        elements.push($(element).find("h2.article-title").text());
+          // var headline = $(element).text();
+          // var link = "https://www.nytimes.com";
+          // link = link + $(element).parents("a").attr("href");
+          // var summaryOne = $(element).parent().parent().siblings().children("li:first-child").text();
+          // var summaryTwo = $(element).parent().parent().siblings().children("li:last-child").text();
 
-          if (headline && summaryOne && link) {
-              results.push({
-                  headline: headline,
-                  summaryOne: summaryOne,
-                  summaryTwo: summaryTwo,
-                  link: link
-              })
-          }
+          // if (headline && summaryOne && link) {
+          //     results.push({
+          //         headline: headline,
+          //         summaryOne: summaryOne,
+          //         summaryTwo: summaryTwo,
+          //         link: link
+          //     })
+          // }
       });
-      db.Article.create(results)
-          .then(function (dbArticle) {
-              res.render("index", { dbArticle });
-              console.log(dbArticle);
-          })
-          .catch(function (err) {
-              console.log(err);
-          })
-      app.get("/", function (req, res) {
-          res.render("index")
-      })
+      // res.json({elements});
+      console.log(elements);
+      // db.Article.create(results)
+      //     .then(function (dbArticle) {
+      //         res.render("index", { dbArticle });
+      //         console.log(dbArticle);
+      //     })
+      //     .catch(function (err) {
+      //         console.log(err);
+      //     })
+      // app.get("/", function (req, res) {
+      //     res.render("index")
+      // })
   })
 });
 
@@ -135,10 +142,10 @@ app.put("/newnote/:id", function(req, res) {
 
 
 app.get("/saved", function (req, res) {
-  var savedArticles = [];
-  db.Article.find({ saved: true }, function (err, saved) {
+  // var savedArticles = [];
+  db.Article.find({ }, function (err, saved) {
       if (err) throw err;
-      savedArticles.push(saved)
+      // savedArticles.push(saved)
       res.render("saved", { saved })
   });
 });
