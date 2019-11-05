@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 
-
+// MONGOOSE CONNECTION
 var MONGODB_URI = process.env.MONGODB_URI || process.env.DEVDATABASE;
 
 mongoose.connect(MONGODB_URI, { useUnifiedTopology: true,  useNewUrlParser: true});
