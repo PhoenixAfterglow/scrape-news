@@ -63,14 +63,14 @@ app.get("/", function (req, res) {
       if (err) throw err;
       res.render("index", { result })
   })
-
 });
-app.get("/newscrape", function (req, res) {
-  axios.get("https://www.gameinformer.com/").then(function (response) {
-      var $ = cheerio.load(response.data)
-      var elements = []
-      $("div .article-body").each(function (i, element) {
-        elements.push($(element).find("h2.article-title").text());
+
+// app.get("/scrape", function (req, res) {
+//   var elements = [];
+//   axios.get("https://www.gameinformer.com/").then(function (response) {
+//       var $ = cheerio.load(response.data)
+//       $(".article-container").each(function (i, element) {
+//         elements.push($(element).find("h3"));
           // var headline = $(element).text();
           // var link = "https://www.nytimes.com";
           // link = link + $(element).parents("a").attr("href");
@@ -85,9 +85,9 @@ app.get("/newscrape", function (req, res) {
           //         link: link
           //     })
           // }
-      });
-      // res.json({elements});
-      console.log(elements);
+      // });
+      // res.json(elements);
+      // console.log("Ahoy matey!", elements);
       // db.Article.create(results)
       //     .then(function (dbArticle) {
       //         res.render("index", { dbArticle });
@@ -99,7 +99,48 @@ app.get("/newscrape", function (req, res) {
       // app.get("/", function (req, res) {
       //     res.render("index")
       // })
-  })
+//   })
+//   .catch(function(err) {
+//     res.json(err);
+//   });
+  
+// });
+
+app.get("/scrape", function(req, res) {
+  // First, we grab the body of the html with axios
+  axios.get("https://www.gameinformer.com/").then(function(response) {
+    let results = []
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    var $ = cheerio.load(response.data);
+
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("div.article-body .teaser-right").each(function(i, element) {
+      // Save an empty result object
+      var result = {};
+
+      // Add the text and href of every link, and save them as properties of the result object
+      const $ele = $(element).find(".article-title a:last-child")
+      
+      result.title = $ele.text()
+      result.link = "https://www.gameinformer.com" + $ele.attr("href");
+
+      results.push(result)
+
+      // Create a new Article using the `result` object built from scraping
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          // View the added result in the console
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          // If an error occurred, log it
+          console.log(err);
+        });
+    });
+
+    // Send a message to the client
+    res.json(results);
+  });
 });
 
 app.put("/update/:id", function (req, res) {

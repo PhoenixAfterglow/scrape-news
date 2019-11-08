@@ -33,7 +33,7 @@
     // Now make an ajax call for the Article
     $.ajax({
       method: "GET",
-      url: "/newscrape"
+      url: "/scrape"
     })
     .then(function(elements) {
       // window.location.reload()

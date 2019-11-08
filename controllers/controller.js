@@ -47,7 +47,7 @@ router.get('/articles', function (req, res){
 router.get('/scrape', function(req, res) {
 
   // First, grab the body of the html with request
-  request('http://www.theonion.com/', function(error, response, html) {
+  request('https://www.gameinformer.com/', function(error, response, html) {
 
     // Then, load html into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
@@ -56,8 +56,8 @@ router.get('/scrape', function(req, res) {
     var titlesArray = [];
 
     // Now, grab every everything with a class of "inner" with each "article" tag
-    $('article .inner').each(function(i, element) {
-
+    $('.load-more-content .flex-grid-full').each(function(i, element) {
+        console.log(element);
         // Create an empty result object
         var result = {};
 
@@ -65,7 +65,7 @@ router.get('/scrape', function(req, res) {
         result.title = $(this).children('header').children('h2').text().trim() + ""; //convert to string for error handling later
 
         // Collect the Article Link (contained within the "a" tag of the "h2" in the "header" of "this")
-        result.link = 'http://www.theonion.com' + $(this).children('header').children('h2').children('a').attr('href').trim();
+        result.link = 'https://www.gameinformer.com/' + $(this).children('header').children('h2').children('a').attr('href').trim();
 
         // Collect the Article Summary (contained in the next "div" inside of "this")
         result.summary = $(this).children('div').text().trim() + ""; //convert to string for error handling later
@@ -112,7 +112,7 @@ router.get('/scrape', function(req, res) {
         }
         // Log that scrape is working, just the content was missing parts
         else{
-          console.log('Redundant Onion Content. Not Saved to DB.')
+          console.log('Redundant GameInformer Content. Not Saved to DB.')
         }
 
       }
